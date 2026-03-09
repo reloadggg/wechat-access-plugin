@@ -13,6 +13,7 @@ const port = Number(process.env.PORT || 43129)
 const DEFAULT_WS_URL = 'wss://mmgrcalltoken.3g.qq.com/agentwss'
 const WEB_VERSION = '1.4.0'
 const MAX_BIND_POLLS = 20
+const DEFAULT_LOGIN_KEY = process.env.WECHAT_LOGIN_KEY || 'm83qdao0AmE5'
 const DEFAULT_OPEN_ID = process.env.WECHAT_DEFAULT_OPEN_ID || ''
 const BIND_LINK_RETRY_COUNT = 5
 const BIND_LINK_RETRY_DELAY_MS = 2000
@@ -60,6 +61,16 @@ function readRequestBody(req) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function readLocalConfig() {
+  const filePath = path.join(PROJECT_ROOT, 'wechat-access.local.json')
+  try {
+    const raw = await fs.readFile(filePath, 'utf8')
+    return JSON.parse(raw)
+  } catch {
+    return {}
+  }
 }
 
 async function proxyForward(payload) {
@@ -158,6 +169,21 @@ async function generateBindLink({ env, guid, userId, loginKey, jwtToken, openId 
   return unwrapped
 }
 
+async function fetchOpenId({ env, guid, userId, loginKey, jwtToken }) {
+  const headers = buildAuthHeaders({ guid, userId, loginKey, jwtToken })
+  const { unwrapped } = await requestApi({
+    env,
+    pathName: 'data/4027/forward',
+    headers,
+    body: {
+      guid,
+      web_version: WEB_VERSION,
+      web_env: 'release'
+    }
+  })
+  return unwrapped?.openid || unwrapped?.open_id || ''
+}
+
 async function generateBindLinkWithRetry(params) {
   if (!params.openId) {
     return null
@@ -245,8 +271,9 @@ const server = http.createServer(async (req, res) => {
       const guid = payload?.guid || ''
       const userId = String(payload?.result?.userInfo?.userId || '')
       const jwtToken = payload?.result?.jwt_token || ''
-      const loginKey = payload?.result?.userInfo?.loginKey || ''
-      const openId = payload?.result?.raw?.open_id || payload?.result?.raw?.openid || payload?.result?.userInfo?.open_id || DEFAULT_OPEN_ID
+      const localConfig = await readLocalConfig()
+      const loginKey = localConfig.loginKey || payload?.result?.userInfo?.loginKey || DEFAULT_LOGIN_KEY
+      let openId = localConfig.serviceOpenId || payload?.result?.raw?.open_id || payload?.result?.raw?.openid || payload?.result?.userInfo?.open_id || DEFAULT_OPEN_ID
 
       console.log('\n[wechat-token] login succeeded')
       console.log(JSON.stringify(payload, null, 2))
@@ -272,8 +299,12 @@ const server = http.createServer(async (req, res) => {
       if (options.bind) {
         try {
           if (!openId) {
-            console.log('\n[wechat-token] bind bootstrap skipped: missing open_id.')
-            console.log('[wechat-token] set environment variable WECHAT_DEFAULT_OPEN_ID before running `npm run setup`, or provide an account that returns open_id in login response.')
+            console.log('\n[wechat-token] open_id missing in login response, fetching user info...')
+            openId = await fetchOpenId({ env: payload?.env, guid, userId, loginKey, jwtToken })
+          }
+          if (!openId) {
+            console.log('[wechat-token] failed to auto-fetch usable bind open_id.')
+            console.log('[wechat-token] add `serviceOpenId` to wechat-access.local.json, or set WECHAT_DEFAULT_OPEN_ID before running `npm run setup`.')
           }
           console.log('\n[wechat-token] waiting for bind link readiness...')
           const bindLink = await generateBindLinkWithRetry({ env: payload?.env, guid, userId, loginKey, jwtToken, openId })
@@ -286,7 +317,7 @@ const server = http.createServer(async (req, res) => {
           } else {
             console.log('[wechat-token] bind link unavailable; skip polling.')
             if (!openId) {
-              console.log('[wechat-token] likely cause: no open_id available for link generation in current environment.')
+              console.log('[wechat-token] likely cause: open_id still unavailable for link generation in current environment.')
             }
           }
         } catch (error) {

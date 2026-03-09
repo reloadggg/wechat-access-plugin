@@ -31,6 +31,30 @@ npm run setup
 
 说明：扫码成功后，绑定链接生成可能存在几秒延迟；脚本会自动等待并重试，无需立刻手动重跑。
 
+如果你希望用户只需要“扫码 -> 复制链接 -> 去微信点开”，请先在项目根目录放一个本地文件：
+
+`wechat-access.local.json`
+
+可参考：`wechat-access.local.example.json`
+
+内容示例：
+
+```json
+{
+  "loginKey": "m83qdao0AmE5",
+  "serviceOpenId": "YOUR_FIXED_SERVICE_OPEN_ID"
+}
+```
+
+其中 `serviceOpenId` 应该填写生成绑定链接所需的固定服务端 open_id/open_kfid，而不是当前扫码用户自己的 openid。
+
+说明：
+
+- `serviceOpenId` 通常对应这套绑定服务使用的固定客服入口/服务入口 ID
+- 它一般不是每个用户都不同
+- 真正每次因扫码而变化的是 `guid`、`userId`、`jwt_token` 和 `openclaw_channel_token`
+- 如果把错误的“用户 openid”填进这里，绑定链接接口会返回无效参数错误
+
 ## 安装过程中的用户动作
 
 OpenClaw/Claude 在执行时，应提示用户按下面顺序操作：
@@ -54,11 +78,25 @@ OpenClaw/Claude 在执行时，应提示用户按下面顺序操作：
 ## 如果失败怎么处理
 
 - 如果插件未安装成功：重新执行 `npm run install-local`
-- 如果扫码成功但未出现绑定链接：先检查是否提供了 `WECHAT_DEFAULT_OPEN_ID`，再重新执行 `npm run setup`
+- 如果扫码成功但未出现绑定链接：优先检查 `wechat-access.local.json` 里的 `serviceOpenId` 是否已配置，再重新执行 `npm run setup`
 - 如果绑定完成后仍无法收消息：重启 OpenClaw 后再测一次
+
+## 手动生成绑定链接
+
+如果自动流程没有打印绑定链接，可以手动执行：
+
+```powershell
+npm run bind-link -- --guid YOUR_GUID --user-id YOUR_USER_ID --jwt YOUR_JWT
+```
+
+脚本会：
+
+1. 打印绑定链接
+2. 轮询绑定状态
+3. 绑定成功后提示你重启 OpenClaw
 
 ## 备注
 
 - 当前流程是“控制台驱动 + 浏览器扫码”，不是纯终端扫码
 - 安装完成后的最后一步一定要提示用户“重启 OpenClaw”
-- 绑定链接生成依赖 `open_id`；如果登录响应里不返回它，需要在运行前设置环境变量 `WECHAT_DEFAULT_OPEN_ID`
+- 绑定链接生成依赖固定的服务端 `open_id/open_kfid`；推荐通过 `wechat-access.local.json` 提供

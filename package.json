@@ -7,6 +7,7 @@
     "setup": "node scripts/install-local.mjs && node tools/token-cli/serve.mjs --apply-config --bind",
     "token": "node tools/token-cli/serve.mjs",
     "token:setup": "node tools/token-cli/serve.mjs --apply-config --bind",
+    "bind-link": "node scripts/bind-link.mjs",
     "apply-config": "node scripts/apply-config.mjs",
     "install-local": "node scripts/install-local.mjs"
   }

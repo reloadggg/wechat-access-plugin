@@ -11,6 +11,9 @@
 - 控制台驱动的扫码取 token 工具
 - 自动写入 `openclaw.json` 的辅助脚本
 - 本地安装到 `.openclaw/extensions` 的安装脚本
+- 可选的本地未跟踪配置 `wechat-access.local.json`
+
+其中本地配置里的 `serviceOpenId` 表示固定的服务入口 ID，用于生成绑定设备链接；它不是每个扫码用户各自不同的 `openid`。
 
 ## 当前能力
 
@@ -69,5 +72,6 @@ npm run setup
 ## 建议
 
 - 不要在公开仓库提交真实 token、jwt、guid、userId 等敏感配置
+- 不要把真实 `serviceOpenId` 提交到仓库；把它放进本地 `wechat-access.local.json`
 - 首次使用前先阅读 `INSTALL.zh-CN.md`
 - 每次更新插件后重新执行 `npm run install-local`

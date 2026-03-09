@@ -7,7 +7,7 @@ const ENV_CONFIG = {
   }
 }
 
-const DEFAULT_LOGIN_KEY = ''
+const DEFAULT_LOGIN_KEY = 'm83qdao0AmE5'
 const WEB_VERSION = '1.4.0'
 
 const state = {
