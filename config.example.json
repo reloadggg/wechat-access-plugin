@@ -1,8 +1,8 @@
 {
   "channels": {
-    "wechat-access": {
+    "wechat-access-unqclawed": {
       "enabled": true,
-      "name": "WeChat Access",
+      "name": "WeChat Access Unqclawed",
       "token": "YOUR_OPENCLAW_CHANNEL_TOKEN",
       "wsUrl": "wss://mmgrcalltoken.3g.qq.com/agentwss",
       "guid": "YOUR_GUID",

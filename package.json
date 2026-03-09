@@ -1,14 +1,27 @@
 {
-  "name": "wechat-access-plugin",
-  "private": true,
+  "name": "openclaw-wechat-access-plugin",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  },
   "scripts": {
     "setup": "node scripts/install-local.mjs && node tools/token-cli/serve.mjs --apply-config --bind",
+    "setup:terminal": "node scripts/terminal-setup.mjs",
+    "login": "node scripts/terminal-setup.mjs --skip-install",
+    "login:browser": "node tools/token-cli/serve.mjs --apply-config --bind",
     "token": "node tools/token-cli/serve.mjs",
+    "token:terminal": "node scripts/terminal-login.mjs",
     "token:setup": "node tools/token-cli/serve.mjs --apply-config --bind",
     "bind-link": "node scripts/bind-link.mjs",
     "apply-config": "node scripts/apply-config.mjs",
     "install-local": "node scripts/install-local.mjs"
+  },
+  "dependencies": {
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0"
   }
 }

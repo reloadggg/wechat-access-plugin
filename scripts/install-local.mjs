@@ -1,11 +1,20 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import process from 'node:process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
-const targetRoot = path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw', 'extensions', 'wechat-access')
+
+function resolveOpenClawHome() {
+  if (process.env.OPENCLAW_HOME) {
+    return path.resolve(process.env.OPENCLAW_HOME)
+  }
+  return path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw')
+}
+
+const targetRoot = path.join(resolveOpenClawHome(), 'extensions', 'openclaw-wechat-access-plugin')
 
 const entriesToCopy = [
   'openclaw.plugin.json',
@@ -33,4 +42,4 @@ for (const entry of entriesToCopy) {
   await copyRecursive(path.join(projectRoot, entry), path.join(targetRoot, entry))
 }
 
-console.log(`Installed wechat-access plugin to ${targetRoot}`)
+console.log(`Installed openclaw-wechat-access-plugin to ${targetRoot}`)

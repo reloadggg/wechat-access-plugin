@@ -1,8 +1,36 @@
 import crypto from 'node:crypto'
+import process from 'node:process'
+import { spawn } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { runWechatWsClient } from './ws-client.js'
 
-const CHANNEL_ID = 'wechat-access'
+const CHANNEL_ID = 'openclaw-wechat-access-plugin'
 const DEFAULT_ACCOUNT_ID = 'main'
+const bootstrappingAccounts = new Set()
+
+function launchTerminalBootstrap(ctx) {
+  if (bootstrappingAccounts.has(ctx.accountId)) {
+    return
+  }
+
+  bootstrappingAccounts.add(ctx.accountId)
+  const scriptPath = fileURLToPath(new URL('../scripts/terminal-setup.mjs', import.meta.url))
+  const child = spawn(process.execPath, [scriptPath, '--skip-install'], {
+    cwd: fileURLToPath(new URL('..', import.meta.url)),
+    stdio: 'inherit',
+    env: process.env,
+    detached: false
+  })
+
+  child.on('exit', () => {
+    bootstrappingAccounts.delete(ctx.accountId)
+  })
+
+  child.on('error', (error) => {
+    bootstrappingAccounts.delete(ctx.accountId)
+    ctx.log?.error?.(`wechat-access bootstrap failed: ${error instanceof Error ? error.message : String(error)}`)
+  })
+}
 
 function getChannelConfig(cfg) {
   return cfg?.channels?.[CHANNEL_ID] || {}
@@ -47,7 +75,7 @@ function buildSessionKey(sessionId) {
 async function handlePrompt({ ctx, ws, message }) {
   const rt = ctx.channelRuntime
   if (!rt) {
-    ctx.log?.warn?.('wechat-access missing channelRuntime; skip prompt handling')
+    ctx.log?.warn?.('openclaw-wechat-access-plugin missing channelRuntime; skip prompt handling')
     return
   }
 
@@ -96,7 +124,7 @@ async function handlePrompt({ ctx, ws, message }) {
         deliveredTexts.push(text)
       },
       onReplyStart: () => {
-        ctx.log?.info?.(`wechat-access reply start session=${sessionId}`)
+        ctx.log?.info?.(`openclaw-wechat-access-plugin reply start session=${sessionId}`)
       }
     }
   })
@@ -119,7 +147,7 @@ async function handlePrompt({ ctx, ws, message }) {
       }
     })))
   } else {
-    ctx.log?.warn?.(`wechat-access ws closed before reply could be sent session=${sessionId}`)
+    ctx.log?.warn?.(`openclaw-wechat-access-plugin ws closed before reply could be sent session=${sessionId}`)
   }
 }
 
@@ -127,8 +155,8 @@ export const wechatAccessPlugin = {
   id: CHANNEL_ID,
   meta: {
     id: CHANNEL_ID,
-    label: 'WeChat Access',
-    selectionLabel: 'WeChat Access',
+    label: 'OpenClaw WeChat Access Plugin',
+    selectionLabel: 'OpenClaw WeChat Access Plugin',
     detailLabel: 'WeCom remote control',
     blurb: 'Receive WeCom remote-control prompts and reply from OpenClaw.',
     order: 95,
@@ -190,13 +218,14 @@ export const wechatAccessPlugin = {
     startAccount: async (ctx) => {
       const account = resolveAccount(ctx.cfg, ctx.accountId)
       if (!(account.token && account.wsUrl && account.guid && account.userId)) {
-        ctx.log?.warn?.('wechat-access not fully configured; waiting for config')
+        ctx.log?.warn?.('openclaw-wechat-access-plugin not fully configured; launching terminal login bootstrap')
+        launchTerminalBootstrap(ctx)
         return new Promise((resolve) => {
           ctx.abortSignal.addEventListener('abort', () => resolve(), { once: true })
         })
       }
 
-      ctx.log?.info?.(`wechat-access starting account=${ctx.accountId}`)
+      ctx.log?.info?.(`openclaw-wechat-access-plugin starting account=${ctx.accountId}`)
       return runWechatWsClient({
         account,
         abortSignal: ctx.abortSignal,
@@ -205,7 +234,7 @@ export const wechatAccessPlugin = {
       })
     },
     stopAccount: async (ctx) => {
-      ctx.log?.info?.(`wechat-access stopped account=${ctx.accountId}`)
+      ctx.log?.info?.(`openclaw-wechat-access-plugin stopped account=${ctx.accountId}`)
     }
   },
   agentPrompt: {

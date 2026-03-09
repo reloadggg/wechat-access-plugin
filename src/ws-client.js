@@ -59,7 +59,7 @@ export async function runWechatWsClient({ account, abortSignal, log, onPrompt })
         break
       }
 
-      log?.info?.('wechat-access connected')
+      log?.info?.('openclaw-wechat-access-plugin connected')
       heartbeat = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({ type: 'ping', ts: Date.now() }))
@@ -69,7 +69,7 @@ export async function runWechatWsClient({ account, abortSignal, log, onPrompt })
       await new Promise((resolve) => {
         const onMessage = async (event) => {
           const raw = String(event.data || '')
-          log?.info?.(`wechat-access inbound ${raw}`)
+          log?.info?.(`openclaw-wechat-access-plugin inbound ${raw}`)
           let message = null
           try {
             message = JSON.parse(raw)
@@ -82,11 +82,11 @@ export async function runWechatWsClient({ account, abortSignal, log, onPrompt })
         }
         const onClose = (event) => {
           cleanup()
-          log?.warn?.(`wechat-access closed code=${event.code} reason=${event.reason || ''}`)
+          log?.warn?.(`openclaw-wechat-access-plugin closed code=${event.code} reason=${event.reason || ''}`)
           resolve()
         }
         const onError = (event) => {
-          log?.error?.(`wechat-access error ${event.message || event.error || 'unknown error'}`)
+          log?.error?.(`openclaw-wechat-access-plugin error ${event.message || event.error || 'unknown error'}`)
         }
         const onAbort = () => {
           cleanup()
@@ -107,7 +107,7 @@ export async function runWechatWsClient({ account, abortSignal, log, onPrompt })
         abortSignal.addEventListener('abort', onAbort, { once: true })
       })
     } catch (error) {
-      log?.error?.(`wechat-access connect failed: ${error instanceof Error ? error.message : String(error)}`)
+      log?.error?.(`openclaw-wechat-access-plugin connect failed: ${error instanceof Error ? error.message : String(error)}`)
     } finally {
       if (heartbeat) {
         clearInterval(heartbeat)

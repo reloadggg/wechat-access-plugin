@@ -1,7 +1,7 @@
 {
-  "id": "wechat-access",
-  "channels": ["wechat-access"],
-  "name": "WeChat Access",
+  "id": "openclaw-wechat-access-plugin",
+  "channels": ["openclaw-wechat-access-plugin"],
+  "name": "OpenClaw WeChat Access Plugin",
   "description": "WeCom-based remote control channel for OpenClaw.",
   "configSchema": {
     "type": "object",

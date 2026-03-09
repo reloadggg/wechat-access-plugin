@@ -8,7 +8,18 @@ import { spawn } from 'node:child_process'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..')
-const OPENCLAW_CONFIG = path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw', 'openclaw.json')
+
+function resolveOpenClawConfigPath() {
+  if (process.env.OPENCLAW_CONFIG) {
+    return path.resolve(process.env.OPENCLAW_CONFIG)
+  }
+  if (process.env.OPENCLAW_HOME) {
+    return path.join(path.resolve(process.env.OPENCLAW_HOME), 'openclaw.json')
+  }
+  return path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw', 'openclaw.json')
+}
+
+const OPENCLAW_CONFIG = resolveOpenClawConfigPath()
 const port = Number(process.env.PORT || 43129)
 const DEFAULT_WS_URL = 'wss://mmgrcalltoken.3g.qq.com/agentwss'
 const WEB_VERSION = '1.4.0'
@@ -127,9 +138,9 @@ function buildAuthHeaders({ guid, userId, loginKey, jwtToken }) {
 async function applyWechatConfig({ token, guid, userId, wsUrl = DEFAULT_WS_URL }) {
   const config = JSON.parse(await fs.readFile(OPENCLAW_CONFIG, 'utf8'))
   config.channels ||= {}
-  config.channels['wechat-access'] = {
+  config.channels['openclaw-wechat-access-plugin'] = {
     enabled: true,
-    name: 'WeChat Access',
+    name: 'OpenClaw WeChat Access Plugin',
     token,
     wsUrl,
     guid,
@@ -137,12 +148,12 @@ async function applyWechatConfig({ token, guid, userId, wsUrl = DEFAULT_WS_URL }
   }
   config.plugins ||= {}
   config.plugins.allow = Array.isArray(config.plugins.allow) ? config.plugins.allow : []
-  if (!config.plugins.allow.includes('wechat-access')) {
-    config.plugins.allow.push('wechat-access')
+  if (!config.plugins.allow.includes('openclaw-wechat-access-plugin')) {
+    config.plugins.allow.push('openclaw-wechat-access-plugin')
   }
   config.plugins.entries ||= {}
-  config.plugins.entries['wechat-access'] = {
-    ...(config.plugins.entries['wechat-access'] || {}),
+  config.plugins.entries['openclaw-wechat-access-plugin'] = {
+    ...(config.plugins.entries['openclaw-wechat-access-plugin'] || {}),
     enabled: true
   }
   await fs.writeFile(OPENCLAW_CONFIG, `${JSON.stringify(config, null, 2)}\n`, 'utf8')
@@ -280,9 +291,9 @@ const server = http.createServer(async (req, res) => {
       console.log('\n[wechat-token] Suggested openclaw.json channel block:')
       console.log(JSON.stringify({
         channels: {
-          'wechat-access': {
+          'openclaw-wechat-access-plugin': {
             enabled: true,
-            name: 'WeChat Access',
+            name: 'OpenClaw WeChat Access Plugin',
             token,
             wsUrl: DEFAULT_WS_URL,
             guid,

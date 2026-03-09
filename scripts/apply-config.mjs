@@ -2,7 +2,17 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 
-const CONFIG_PATH = path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw', 'openclaw.json')
+function resolveDefaultConfigPath() {
+  if (process.env.OPENCLAW_CONFIG) {
+    return path.resolve(process.env.OPENCLAW_CONFIG)
+  }
+  if (process.env.OPENCLAW_HOME) {
+    return path.join(path.resolve(process.env.OPENCLAW_HOME), 'openclaw.json')
+  }
+  return path.join(process.env.USERPROFILE || process.env.HOME || '.', '.openclaw', 'openclaw.json')
+}
+
+const CONFIG_PATH = resolveDefaultConfigPath()
 
 function parseArgs(argv) {
   const args = {
@@ -44,12 +54,12 @@ Options:
 function ensurePluginEnabled(config) {
   config.plugins ||= {}
   config.plugins.allow = Array.isArray(config.plugins.allow) ? config.plugins.allow : []
-  if (!config.plugins.allow.includes('wechat-access')) {
-    config.plugins.allow.push('wechat-access')
+  if (!config.plugins.allow.includes('openclaw-wechat-access-plugin')) {
+    config.plugins.allow.push('openclaw-wechat-access-plugin')
   }
   config.plugins.entries ||= {}
-  config.plugins.entries['wechat-access'] = {
-    ...(config.plugins.entries['wechat-access'] || {}),
+  config.plugins.entries['openclaw-wechat-access-plugin'] = {
+    ...(config.plugins.entries['openclaw-wechat-access-plugin'] || {}),
     enabled: true
   }
 }
@@ -66,9 +76,9 @@ async function main() {
 
   const config = JSON.parse(await fs.readFile(args.config, 'utf8'))
   config.channels ||= {}
-  config.channels['wechat-access'] = {
+  config.channels['openclaw-wechat-access-plugin'] = {
     enabled: args.enable,
-    name: 'WeChat Access',
+    name: 'OpenClaw WeChat Access Plugin',
     token: args.token,
     wsUrl: args.wsUrl,
     guid: args.guid,
@@ -77,7 +87,7 @@ async function main() {
   ensurePluginEnabled(config)
 
   await fs.writeFile(args.config, `${JSON.stringify(config, null, 2)}\n`, 'utf8')
-  console.log(`Applied wechat-access config to ${args.config}`)
+  console.log(`Applied openclaw-wechat-access-plugin config to ${args.config}`)
 }
 
 main().catch((error) => {
