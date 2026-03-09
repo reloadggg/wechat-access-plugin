@@ -5,7 +5,7 @@ import path from 'node:path'
 const BASE_URL = 'https://jprx.m.qq.com/'
 const WEB_VERSION = '1.4.0'
 const DEFAULT_LOGIN_KEY = process.env.WECHAT_LOGIN_KEY || 'm83qdao0AmE5'
-const DEFAULT_OPEN_ID = process.env.WECHAT_DEFAULT_OPEN_ID || ''
+const DEFAULT_OPEN_ID = process.env.WECHAT_DEFAULT_OPEN_ID || 'wkzLlJLAAAfbxEV3ZcS-lHZxkaKmpejQ'
 const PROJECT_ROOT = process.cwd()
 
 function parseArgs(argv) {
@@ -141,7 +141,7 @@ async function main() {
     args.openId = await fetchOpenId(args, headers)
   }
   if (!args.openId) {
-    throw new Error('open_id unavailable; set serviceOpenId in wechat-access.local.json, pass --open-id, or set WECHAT_DEFAULT_OPEN_ID')
+    throw new Error('open_id unavailable; pass --open-id or set WECHAT_DEFAULT_OPEN_ID')
   }
   const linkPayload = await callApi({
     pathName: 'data/4018/forward',

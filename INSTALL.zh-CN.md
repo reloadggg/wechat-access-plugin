@@ -31,7 +31,13 @@ npm run setup
 
 说明：扫码成功后，绑定链接生成可能存在几秒延迟；脚本会自动等待并重试，无需立刻手动重跑。
 
-如果你希望用户只需要“扫码 -> 复制链接 -> 去微信点开”，请先在项目根目录放一个本地文件：
+当前项目已内置与原客户端一致的固定服务入口 `open_id`，默认情况下用户只需要：
+
+1. 扫码
+2. 复制终端打印出来的绑定链接
+3. 去微信里打开它
+
+如果你需要覆盖默认服务入口，才需要在项目根目录放一个本地文件：
 
 `wechat-access.local.json`
 
@@ -78,7 +84,7 @@ OpenClaw/Claude 在执行时，应提示用户按下面顺序操作：
 ## 如果失败怎么处理
 
 - 如果插件未安装成功：重新执行 `npm run install-local`
-- 如果扫码成功但未出现绑定链接：优先检查 `wechat-access.local.json` 里的 `serviceOpenId` 是否已配置，再重新执行 `npm run setup`
+- 如果扫码成功但未出现绑定链接：先重新执行 `npm run setup`；如需覆盖默认入口，再检查 `wechat-access.local.json` 或 `WECHAT_DEFAULT_OPEN_ID`
 - 如果绑定完成后仍无法收消息：重启 OpenClaw 后再测一次
 
 ## 手动生成绑定链接
@@ -99,4 +105,4 @@ npm run bind-link -- --guid YOUR_GUID --user-id YOUR_USER_ID --jwt YOUR_JWT
 
 - 当前流程是“控制台驱动 + 浏览器扫码”，不是纯终端扫码
 - 安装完成后的最后一步一定要提示用户“重启 OpenClaw”
-- 绑定链接生成依赖固定的服务端 `open_id/open_kfid`；推荐通过 `wechat-access.local.json` 提供
+- 绑定链接生成依赖固定的服务端 `open_id/open_kfid`；当前仓库已内置与原客户端一致的默认值，也可通过 `wechat-access.local.json` 覆盖

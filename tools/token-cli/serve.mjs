@@ -14,7 +14,7 @@ const DEFAULT_WS_URL = 'wss://mmgrcalltoken.3g.qq.com/agentwss'
 const WEB_VERSION = '1.4.0'
 const MAX_BIND_POLLS = 20
 const DEFAULT_LOGIN_KEY = process.env.WECHAT_LOGIN_KEY || 'm83qdao0AmE5'
-const DEFAULT_OPEN_ID = process.env.WECHAT_DEFAULT_OPEN_ID || ''
+const DEFAULT_OPEN_ID = process.env.WECHAT_DEFAULT_OPEN_ID || 'wkzLlJLAAAfbxEV3ZcS-lHZxkaKmpejQ'
 const BIND_LINK_RETRY_COUNT = 5
 const BIND_LINK_RETRY_DELAY_MS = 2000
 
@@ -304,7 +304,7 @@ const server = http.createServer(async (req, res) => {
           }
           if (!openId) {
             console.log('[wechat-token] failed to auto-fetch usable bind open_id.')
-            console.log('[wechat-token] add `serviceOpenId` to wechat-access.local.json, or set WECHAT_DEFAULT_OPEN_ID before running `npm run setup`.')
+            console.log('[wechat-token] using built-in serviceOpenId fallback from the original client is recommended for standard setup.')
           }
           console.log('\n[wechat-token] waiting for bind link readiness...')
           const bindLink = await generateBindLinkWithRetry({ env: payload?.env, guid, userId, loginKey, jwtToken, openId })
