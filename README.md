@@ -1,72 +1,90 @@
 # WeChat Access Plugin
 
-## 项目目标
+这是一个给 OpenClaw 用的微信远控插件。
 
-`wechat-access-plugin` 是一个独立的 OpenClaw 渠道插件项目，用于把第三方微信远程控制链路接入本地 OpenClaw，使控制端微信号可以向 OpenClaw 发送消息并接收回复。
+装好以后，你可以：
 
-当前项目主要包含：
+- 用微信扫码完成登录
+- 让终端自动打印“绑定设备链接”
+- 用控制端微信打开这个链接完成绑定
+- 之后直接用微信给 OpenClaw 发消息
 
-- OpenClaw 渠道插件本体
-- WebSocket 通道接入逻辑
-- 控制台驱动的扫码取 token 工具
-- 自动写入 `openclaw.json` 的辅助脚本
-- 本地安装到 `.openclaw/extensions` 的安装脚本
+## 一句话安装
 
-## 当前能力
-
-- 安装为独立 OpenClaw 插件
-- 通过扫码登录获取 `openclaw_channel_token`
-- 自动写入本地 OpenClaw 配置
-- 建立微信远控 WebSocket 通道
-- 接收控制端微信消息并回传 OpenClaw 回复
-
-## 快速开始
-
-推荐直接执行：
+在项目目录执行：
 
 ```powershell
 cd <plugin-dir>
 npm run setup
 ```
 
-这会自动完成安装、扫码登录、配置写入和绑定流程初始化。
+## 安装时会发生什么
 
-详细安装步骤请看：`INSTALL.zh-CN.md`
+`npm run setup` 会自动做这些事：
 
-## 项目结构
+1. 把插件安装到 `~/.openclaw/extensions/wechat-access`
+2. 打开微信扫码页
+3. 扫码成功后把配置写入 `~/.openclaw/openclaw.json`
+4. 生成绑定设备链接
+5. 在终端打印绑定链接和绑定状态
 
-- `index.js`：插件入口
-- `src/channel.js`：渠道适配与消息桥接
-- `src/ws-client.js`：WebSocket 长连接、重连与心跳
-- `scripts/install-local.mjs`：安装插件到本地 OpenClaw
-- `scripts/apply-config.mjs`：把 token/guid/userId 写入 `openclaw.json`
-- `tools/token-cli/serve.mjs`：控制台驱动的扫码取 token 工具
+## 你需要做什么
 
-## 免责声明
+用户只需要跟着做这几步：
 
-本项目是基于现有第三方客户端行为、接口与通信链路进行逆向分析后实现的兼容性插件，**不是官方 SDK、不是官方开放平台集成，也未获得原厂或相关服务提供方的正式授权声明**。
+1. 在浏览器里完成微信扫码
+2. 复制终端打印出来的绑定链接
+3. 用控制端微信打开这个链接
+4. 看到绑定完成后，重启 OpenClaw
+5. 用控制端微信发一条消息测试
 
-使用本项目时请注意：
+## 常用命令
 
-- 本项目仅供学习、研究、个人测试与兼容性验证使用
-- 请自行评估目标服务的用户协议、平台规则、法律合规与账号风险
-- 由于上游接口、鉴权机制、绑定流程和协议细节可能随时变化，项目功能可能失效
-- 因使用本项目导致的账号限制、服务异常、数据问题、封禁风险或其他损失，需由使用者自行承担
-- 若你计划将其用于商业用途、团队环境或公开分发，建议先完成充分的合规与授权评估
+一键安装：
 
-## 风险说明
+```powershell
+npm run setup
+```
 
-- 上游接口可能变更，导致扫码、绑定或消息收发失效
-- 绑定流程依赖远端接口状态，不能保证每次都完全自动化
-- 登录与远控能力依赖第三方服务存活，不属于本项目可控范围
+只安装插件：
 
-## 建议
+```powershell
+npm run install-local
+```
 
-- 不要在公开仓库提交真实 token、jwt、guid、userId 等敏感配置
-- 首次使用前先阅读 `INSTALL.zh-CN.md`
-- 每次更新插件后重新执行 `npm run install-local`
+只扫码取 token：
 
-## 补充说明
+```powershell
+npm run token
+```
 
-- 完整项目说明：`PROJECT.zh-CN.md`
-- 安装执行说明：`INSTALL.zh-CN.md`
+手动生成绑定链接：
+
+```powershell
+npm run bind-link -- --guid YOUR_GUID --user-id YOUR_USER_ID --jwt YOUR_JWT
+```
+
+## 如果没成功
+
+- 没装上：重新执行 `npm run install-local`
+- 扫码成功但没看到绑定链接：重新执行 `npm run setup`
+- 绑定后还是收不到消息：先重启 OpenClaw，再测试一次
+
+## 说明
+
+- 当前项目已经内置了和原客户端一致的默认绑定服务入口
+- 普通用户不需要自己再找 `serviceOpenId`
+- 如果你要覆盖默认入口，可以再看 `INSTALL.zh-CN.md`
+
+## 风险与免责声明
+
+本项目是基于第三方客户端行为与接口链路做的兼容实现，不是官方 SDK，也不是官方授权集成。
+
+- 仅建议用于学习、研究、个人测试与兼容性验证
+- 上游接口变更后，扫码、绑定或消息收发都可能失效
+- 使用本项目带来的账号、服务、合规等风险需自行承担
+
+## 进一步阅读
+
+- 安装说明：`INSTALL.zh-CN.md`
+- 项目说明：`PROJECT.zh-CN.md`
