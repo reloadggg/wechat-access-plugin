@@ -1,0 +1,12 @@
+{
+  "channels": {
+    "wechat-access": {
+      "enabled": true,
+      "name": "WeChat Access",
+      "token": "YOUR_OPENCLAW_CHANNEL_TOKEN",
+      "wsUrl": "wss://mmgrcalltoken.3g.qq.com/agentwss",
+      "guid": "YOUR_GUID",
+      "userId": "YOUR_USER_ID"
+    }
+  }
+}

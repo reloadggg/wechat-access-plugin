@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeChat Token CLI Helper</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel hero">
+        <div>
+          <p class="eyebrow">WeChat Access Plugin</p>
+          <h1>控制台取 Token</h1>
+          <p class="subtle">页面只负责展示二维码和完成扫码，成功后的 token 会回传到终端。</p>
+        </div>
+        <button id="start-login" class="primary">开始扫码</button>
+      </section>
+
+      <section class="layout">
+        <section class="panel left">
+          <div class="section-head">
+            <h2>状态</h2>
+            <span id="status-badge" class="badge idle">待开始</span>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              <span>环境</span>
+              <select id="env-select">
+                <option value="production">production</option>
+                <option value="test">test</option>
+              </select>
+            </label>
+            <label>
+              <span>GUID</span>
+              <input id="guid-input" type="text" />
+            </label>
+          </div>
+
+          <div class="section-head compact">
+            <h2>二维码</h2>
+            <button id="refresh-state" class="linkish">刷新 state</button>
+          </div>
+
+          <div class="qrcode-shell">
+            <div id="wx_login" class="wx-login-slot"></div>
+            <p id="qrcode-tip" class="subtle center">点“开始扫码”后生成二维码</p>
+          </div>
+        </section>
+
+        <section class="panel right">
+          <div class="section-head compact">
+            <h2>日志</h2>
+            <button id="clear-log" class="linkish">清空</button>
+          </div>
+          <pre id="log-output" class="log-output"></pre>
+          <div class="result-box">
+            <p>扫码成功后，终端会直接输出：</p>
+            <ul>
+              <li>`jwt_token`</li>
+              <li>`openclaw_channel_token`</li>
+              <li>`userInfo`</li>
+            </ul>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

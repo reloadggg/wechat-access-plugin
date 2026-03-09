@@ -1,0 +1,21 @@
+# Local runtime artifacts
+*.log
+*.tmp
+*.local.json
+
+# Token helper outputs
+token-result.json
+bind-result.json
+
+# Sensitive local config copies
+openclaw.local.json
+wechat-access.local.json
+wechat-auth.local.json
+config.json
+
+# Environment variables
+.env
+.env.*
+
+# Node leftovers
+node_modules/

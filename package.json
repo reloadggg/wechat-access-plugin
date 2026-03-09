@@ -1,0 +1,13 @@
+{
+  "name": "wechat-access-plugin",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/install-local.mjs && node tools/token-cli/serve.mjs --apply-config --bind",
+    "token": "node tools/token-cli/serve.mjs",
+    "token:setup": "node tools/token-cli/serve.mjs --apply-config --bind",
+    "apply-config": "node scripts/apply-config.mjs",
+    "install-local": "node scripts/install-local.mjs"
+  }
+}

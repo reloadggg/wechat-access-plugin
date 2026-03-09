@@ -1,0 +1,11 @@
+{
+  "id": "wechat-access",
+  "channels": ["wechat-access"],
+  "name": "WeChat Access",
+  "description": "WeCom-based remote control channel for OpenClaw.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
