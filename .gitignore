@@ -16,6 +16,7 @@ config.json
 # Environment variables
 .env
 .env.*
+.npmrc
 
 # Node leftovers
 node_modules/

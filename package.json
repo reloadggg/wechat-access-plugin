@@ -1,8 +1,37 @@
 {
-  "name": "openclaw-wechat-access-plugin",
+  "name": "@fengcch/openclaw-wechat-access-plugin",
   "private": false,
   "version": "0.1.0",
+  "description": "OpenClaw WeChat access plugin with terminal-first login and binding flow.",
   "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "fengcch",
+  "homepage": "https://github.com/reloadggg/wechat-access-plugin#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reloadggg/wechat-access-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reloadggg/wechat-access-plugin/issues"
+  },
+  "keywords": [
+    "openclaw",
+    "wechat",
+    "plugin",
+    "gateway",
+    "remote-control"
+  ],
+  "files": [
+    "index.js",
+    "openclaw.plugin.json",
+    "src",
+    "scripts",
+    "tools",
+    "config.example.json",
+    "wechat-access.local.example.json",
+    "README.md"
+  ],
   "openclaw": {
     "extensions": [
       "./index.js"
