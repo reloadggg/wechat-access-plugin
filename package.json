@@ -1,7 +1,7 @@
 {
   "name": "@fengcch/openclaw-wechat-access-plugin",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenClaw WeChat access plugin with terminal-first login and binding flow.",
   "type": "module",
   "main": "index.js",
