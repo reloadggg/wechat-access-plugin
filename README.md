@@ -5,10 +5,10 @@
 它做的事情很直接：
 
 - 安装到 OpenClaw 插件系统
-- 启用后提供微信登录入口
-- 帮你拿到 token
-- 打印绑定设备链接
-- 完成绑定后，让你可以用微信控制 OpenClaw
+- 终端二维码扫码登录，全自动轮询完成
+- 获取 jwt_token 和 channel_token，gateway 启动时自动刷新
+- 自动设备绑定
+- 通过 WebSocket 接收微信消息，调用 agent 并回复
 
 ## 安装
 
@@ -30,22 +30,24 @@ openclaw config set channels.openclaw-wechat-access-plugin.enabled true
 
 安装后可以直接用 OpenClaw 命令触发登录。
 
-默认推荐终端二维码方案：
+**推荐：终端二维码方案**（自动轮询，无需浏览器）：
 
 ```bash
 openclaw wechat-access login
 ```
 
-如果终端二维码方案不稳定，再用浏览器备用方案：
+终端会直接渲染二维码，用微信扫码并确认后自动完成登录、token 获取和设备绑定。
+
+**备用：浏览器方案**（终端二维码方案不稳定时使用）：
 
 ```bash
 openclaw wechat-access login-browser
 ```
 
-只想显示二维码并输出 token JSON：
+清除登录态：
 
 ```bash
-openclaw wechat-access qr
+openclaw wechat-access logout
 ```
 
 查看插件状态建议：
@@ -57,12 +59,16 @@ openclaw status
 
 ## 用户需要做什么
 
-整个流程里，目前用户还需要自己完成两步：
+整个流程里，用户只需要：
 
-1. 用微信扫码并在手机上确认登录
-2. 用控制端微信打开终端打印出来的绑定链接
+1. 用微信扫描终端显示的二维码，并在手机上确认登录
+2. 如提示需要绑定，用控制端微信打开绑定链接
 
 完成后，终端会提示你重启 OpenClaw。
+
+## Token 刷新机制
+
+登录后 jwt_token 会保存到 `~/.openclaw/wechat-access-auth.json`。每次 gateway 启动时，插件会用 jwt_token 自动刷新 channel_token，无需重新扫码。
 
 ## 成功标志
 
@@ -77,17 +83,7 @@ openclaw status
 - 没弹登录：手动执行 `openclaw wechat-access login`
 - 终端二维码不好用：改用 `openclaw wechat-access login-browser`
 - 绑定后还是离线：先重启 OpenClaw，再测试一次
-
-## 当前状态
-
-当前已经具备这些能力：
-
-- OpenClaw 插件安装
-- OpenClaw 命令入口
-- 终端二维码登录原型
-- 浏览器扫码登录备用方案
-- 自动写配置
-- 自动打印绑定链接
+- WebSocket 1006 断连：执行 `openclaw wechat-access login` 重新登录获取新 token
 
 ## 免责声明
 

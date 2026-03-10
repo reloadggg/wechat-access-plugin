@@ -144,7 +144,8 @@ async function applyWechatConfig({ token, guid, userId, wsUrl = DEFAULT_WS_URL }
     token,
     wsUrl,
     guid,
-    userId: String(userId)
+    userId: String(userId),
+    queryIdentityMode: 'token-only'
   }
   config.plugins ||= {}
   config.plugins.allow = Array.isArray(config.plugins.allow) ? config.plugins.allow : []
@@ -297,7 +298,8 @@ const server = http.createServer(async (req, res) => {
             token,
             wsUrl: DEFAULT_WS_URL,
             guid,
-            userId
+            userId,
+            queryIdentityMode: 'token-only'
           }
         }
       }, null, 2))

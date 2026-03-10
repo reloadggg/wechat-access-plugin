@@ -63,7 +63,8 @@ async function applyWechatConfig({ token, guid, userId }) {
     token,
     wsUrl: DEFAULT_WS_URL,
     guid,
-    userId: String(userId)
+    userId: String(userId),
+    queryIdentityMode: 'token-only'
   }
   config.plugins ||= {}
   config.plugins.allow = Array.isArray(config.plugins.allow) ? config.plugins.allow : []

@@ -82,7 +82,8 @@ async function main() {
     token: args.token,
     wsUrl: args.wsUrl,
     guid: args.guid,
-    userId: String(args.userId)
+    userId: String(args.userId),
+    queryIdentityMode: 'token-only'
   }
   ensurePluginEnabled(config)
 

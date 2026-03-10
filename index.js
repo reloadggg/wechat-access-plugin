@@ -1,4 +1,4 @@
-import { wechatAccessPlugin } from './src/channel.js'
+import { wechatAccessPlugin, setPluginRuntime } from './src/channel.js'
 import { registerWechatAccessCli } from './src/cli.js'
 
 const plugin = {
@@ -13,9 +13,10 @@ const plugin = {
     }
   },
   register(api) {
+    setPluginRuntime(api.runtime)
     api.registerChannel({ plugin: wechatAccessPlugin })
-    api.registerCli(({ program }) => {
-      registerWechatAccessCli({ program, logger: api.logger })
+    api.registerCli(({ program, config }) => {
+      registerWechatAccessCli({ program, logger: api.logger, config })
     }, { commands: ['wechat-access'] })
   }
 }
