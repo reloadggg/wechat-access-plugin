@@ -1,6 +1,7 @@
 # @fengcch/openclaw-wechat-access-plugin
 
 一个给 OpenClaw 用的微信接入插件。
+**目前腾讯在后端加了验证无邀请码的情况下没办法使用，后续开放后再看看**
 
 它做的事情很直接：
 
